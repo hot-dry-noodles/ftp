@@ -1,11 +1,12 @@
-import log
 import socket
+
+import log
 
 logger = log.get("ftp")
 
 CRLF = "\r\n"
 FTP_PORT = 21
-RECV_BUFFER_SZ = 1024
+RECV_BUF_SZ = 1024
 
 
 class FTP:
@@ -36,12 +37,16 @@ class FTP:
         self.send("PASS {}".format(self.passwd))
         self.recv(230)
 
+    # send a ftp command to the server, CRLF would be automatically appended
+    # `send` and `recv` are the two most fundamental abstraction over ftp communication model
+    # most control message exchange can be expressed using these two methods
     def send(self, cmd: str):
         logger.info(cmd)
         self.socket.send(bytes("{}".format(cmd) + CRLF, "utf-8"))
 
+    # receive the server respond and check its legality when status code is offered
     def recv(self, code=None) -> str:
-        ret = self.socket.recv(RECV_BUFFER_SZ).decode("utf-8").strip()
+        ret = self.socket.recv(RECV_BUF_SZ).decode("utf-8").strip()
         logger.info(ret)
         if code is not None:
             # logger.info("expecting {} got {}".format(code, ret[:3]))
