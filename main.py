@@ -1,4 +1,7 @@
 import log
+import sys
+import client
+from PyQt5.QtWidgets import QApplication, QMainWindow
 from ftp import FTP
 
 logger = log.setup('ftp')
@@ -20,5 +23,9 @@ def main():
 
 
 if __name__ == '__main__':
-    test()
-    main()
+    app = QApplication(sys.argv)
+    MainWindow = QMainWindow()
+    ui = client.Ui_MainWindow()
+    ui.setupUi(MainWindow)
+    MainWindow.show()
+    sys.exit(app.exec_())
