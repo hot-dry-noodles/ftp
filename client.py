@@ -136,7 +136,7 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "FTP客户端"))
         self.serverLabel.setText(_translate("MainWindow", "主机"))
         self.userLabel.setText(_translate("MainWindow", "用户名"))
         self.passwdLabel.setText(_translate("MainWindow", "密码"))

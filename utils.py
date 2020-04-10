@@ -41,6 +41,8 @@ def ListFolder(path=LOCAL_DEFAULT_PATH):
         postFix = ext[1:]
         absPath = os.path.join(os.getcwd(), file)
         mode = getFileMode(absPath)
+        if postFix:
+            name = name + '.' + postFix
         if mode.startswith('d'):
             ftype = u'文件夹'
         elif FILE_DICT.get(postFix):
