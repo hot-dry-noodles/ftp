@@ -4,7 +4,7 @@ from utils import *
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(1089, 672)
+        MainWindow.resize(1149, 678)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.horizontalLayoutWidget = QtWidgets.QWidget(self.centralwidget)
@@ -47,7 +47,7 @@ class Ui_MainWindow(object):
         self.portInput.setObjectName("portInput")
         self.horizontalLayout_2.addWidget(self.portInput)
         self.verticalLayoutWidget_3 = QtWidgets.QWidget(self.centralwidget)
-        self.verticalLayoutWidget_3.setGeometry(QtCore.QRect(10, 440, 1071, 221))
+        self.verticalLayoutWidget_3.setGeometry(QtCore.QRect(10, 440, 1131, 221))
         self.verticalLayoutWidget_3.setObjectName("verticalLayoutWidget_3")
         self.verticalLayout_4 = QtWidgets.QVBoxLayout(self.verticalLayoutWidget_3)
         self.verticalLayout_4.setContentsMargins(0, 0, 0, 0)
@@ -66,7 +66,7 @@ class Ui_MainWindow(object):
         self.connectButton.setGeometry(QtCore.QRect(670, 15, 71, 31))
         self.connectButton.setObjectName("connectButton")
         self.horizontalLayoutWidget_3 = QtWidgets.QWidget(self.centralwidget)
-        self.horizontalLayoutWidget_3.setGeometry(QtCore.QRect(10, 50, 1071, 381))
+        self.horizontalLayoutWidget_3.setGeometry(QtCore.QRect(10, 50, 1131, 381))
         self.horizontalLayoutWidget_3.setObjectName("horizontalLayoutWidget_3")
         self.horizontalLayout_4 = QtWidgets.QHBoxLayout(self.horizontalLayoutWidget_3)
         self.horizontalLayout_4.setContentsMargins(0, 0, 0, 0)

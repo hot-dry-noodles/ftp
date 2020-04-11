@@ -27,5 +27,7 @@ if __name__ == '__main__':
     MainWindow = QMainWindow()
     ui = client.Ui_MainWindow()
     ui.setupUi(MainWindow)
+    qss_file = open('./ui/style.qss').read()
+    MainWindow.setStyleSheet(qss_file)
     MainWindow.show()
     sys.exit(app.exec_())
