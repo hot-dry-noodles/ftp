@@ -16,7 +16,8 @@ def test():
     ftp.recv(200)
     ftp.send("QUIT")
     ftp.recv(221)
-
+    # ftp.download('/home/user/test.c', 'D:/1review/grade_3_2/NetAppDesign')
+    # ftp.upload('D:/1review/grade_3_2/NetAppDesign/ftp/ftp/fs.cpp', '/home/kenvis')
 
 def main():
     pass
