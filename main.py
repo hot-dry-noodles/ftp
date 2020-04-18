@@ -18,6 +18,7 @@ def test():
     ftp.send("NOOP")
     ftp.recv(200)
     ftp.download('foo')
+    ftp.upload('bar')
     ftp.send("QUIT")
     ftp.recv(221)
 
@@ -34,5 +35,5 @@ def main(argv):
 
 
 if __name__ == '__main__':
-    # test()
-    main(sys.argv)
+    test()
+    # main(sys.argv)

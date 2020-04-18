@@ -17,6 +17,7 @@ class FTP:
     socket = None
     user = "anonymous"
     passwd = ""
+    sock_file = ""
 
     def __init__(self, host, port=None, user=None, passwd=None):
         self.host = host
@@ -31,6 +32,7 @@ class FTP:
 
     def connect(self):
         self.socket = socket.create_connection((self.host, self.port))
+        self.sock_file = self.socket.makefile('r')
         self.recv(220)
 
     def login(self):
@@ -53,7 +55,7 @@ class FTP:
 
     # receive the server respond and check its legality when status code is offered
     def recv(self, code=None) -> str:
-        ret = self.socket.recv(RECV_BUF_SZ).decode("utf-8").strip()
+        ret = self.sock_file.readline().strip()
         logger.info(ret)
         if code is not None:
             # logger.info("expecting {} got {}".format(code, ret[:3]))
