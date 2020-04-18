@@ -38,10 +38,15 @@ class FTP:
         self.send("PASS {}".format(self.passwd))
         self.recv(230)
 
+    def list(self):
+        self.send("USER {}".format(self.user))
+        self.recv(331)
+
     # send a ftp command to the server, CRLF would be automatically appended
     # `send` and `recv` are the two most fundamental abstraction over ftp communication model
     # most control message exchange can be expressed using these two methods
     def send(self, cmd: str):
+        cmd = cmd.strip()
         logger.info(cmd)
         self.socket.send(bytes("{}".format(cmd) + CRLF, "utf-8"))
 

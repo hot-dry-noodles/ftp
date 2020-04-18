@@ -7,7 +7,13 @@
 # WARNING! All changes made in this file will be lost!
 
 
-from PyQt5 import QtCore, QtGui, QtWidgets
+import sys
+
+# prefer official qt bindings
+if 'PySide2' in sys.modules:
+    from PySide2 import QtWidgets, QtCore
+else:
+    from PyQt5 import QtWidgets, QtCore
 
 
 class Ui_MainWindow(object):
