@@ -17,12 +17,9 @@ def test():
     ftp = FTP("104.238.181.33")
     ftp.send("NOOP")
     ftp.recv(200)
-    ftp.send("PASV")
-    ftp.recv()
+    ftp.download('foo')
     ftp.send("QUIT")
     ftp.recv(221)
-    # ftp.download('/home/user/test.c', 'D:/1review/grade_3_2/NetAppDesign')
-    # ftp.upload('D:/1review/grade_3_2/NetAppDesign/ftp/ftp/fs.cpp', '/home/kenvis')
 
 
 def main(argv):
@@ -37,4 +34,5 @@ def main(argv):
 
 
 if __name__ == '__main__':
+    # test()
     main(sys.argv)

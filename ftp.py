@@ -1,7 +1,8 @@
+import os
+import re
 import socket
 
 import log
-import os
 
 logger = log.get("ftp")
 
@@ -60,62 +61,53 @@ class FTP:
         return ret
 
     # extract host and port from the response
-    # resp format: 227 xxx (host,port)
-    def parse227(self, resp):
-        assert resp[:3] == '227', "PASV mode change fail"
-
-        import re
+    # resp format: 227 (h3, h2, h1, h0, p1, p0)
+    def parse227(self, resp) -> (str, int):
         _227_re = re.compile(r'(\d+),(\d+),(\d+),(\d+),(\d+),(\d+)', re.ASCII)
-        
         m = _227_re.search(resp)
-        assert m, "No match host and port"
-        numbers = m.groups()
-        host = '.'.join(numbers[:4])
-        port = (int(numbers[4]) << 8) + int(numbers[5])
+        assert m, "server did not respond with a valid socket address"
+        numbers = list(map(int, m.groups()))
+        host = '.'.join(map(str, numbers[:4]))
+        port = (numbers[4] << 8) + numbers[5]
         return host, port
 
-    # send PASV
-    def makepasv(self):
+    # enter passive mode for data transfer
+    def pasv(self) -> (str, int):
         self.send('PASV')  # receive 227
-        host,port = self.parse227(self.recv(227))
-        return host,port
+        host, port = self.parse227(self.recv(227))
+        return host, port
 
     # establish a new data connection
-    # STOR and RETR
-    # cmd： 'STOR name' or 'RETR name'
-    def transfercmd(self, cmd):
-        host, port = self.makepasv()
-        conn = socket.create_connection((host, port))   # data connection
+    # cmd can be one of:
+    # STOR name: Accept the data and to store the data as a file at the server site
+    # RETR name: Retrieve a copy of the file
+    def transfer(self, cmd) -> socket:
+        host, port = self.pasv()
         self.send(cmd)
-        self.recv(150)
+        conn = socket.create_connection((host, port))  # data connection
+        self.recv(150)  # File status okay; about to open data connection.
         return conn
 
     # upload files by binary -- STOR
-    def upload(self, b_url, e_url="", blocksize=8192):
-        filename = os.path.basename(b_url)
-        cmd = "STOR {}".format(e_url + '/' + filename)
-        fp = open(b_url, 'rb')
-        with self.transfercmd(cmd) as conn:
+    def upload(self, local, remote="", blocksize=8192):
+        filename = os.path.basename(local)
+        cmd = "STOR {}".format(remote + filename)
+        with open(local, 'rb') as f, self.transfer(cmd) as conn:
             while 1:
-                pass
-                buf = fp.read(blocksize)
+                buf = f.read(blocksize)
                 if not buf:
                     break
                 conn.sendall(buf)
-        fp.close()
-        return self.recv() #226 Transfer complete
-
+        self.recv(226)  # Closing data connection
 
     # download files by binary -- RETR
-    def download(self, b_url, e_url="", blocksize=8192):
-        filename = os.path.basename(b_url)
-        cmd = "RETR {}".format(b_url)
-        fp = open(e_url + filename,'wb')
-        with self.transfercmd(cmd) as conn:
+    def download(self, remote, local="", blocksize=8192):
+        filename = os.path.basename(remote)
+        cmd = "RETR {}".format(remote)
+        with open(local + filename, 'wb') as f, self.transfer(cmd) as conn:
             while 1:
-                data = conn.recv(blocksize)
-                if not data:
+                buf = conn.recv(blocksize)
+                if not buf:
                     break
-                fp.write(data)
-        fp.close()
-        return self.recv() #226 Transfer complete
+                f.write(buf)
+        self.recv(226)  # 226 Transfer complete
