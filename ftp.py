@@ -113,3 +113,14 @@ class FTP:
                     break
                 f.write(buf)
         self.recv(226)  # 226 Transfer complete
+
+    def list(self, dir=""):
+        cmd = "LIST {}".format(dir)
+        lines = None
+        with self.transfer(cmd) as conn:
+            with conn.makefile('r') as f:
+                lines = f.readlines()
+        self.recv(226)
+        files = list(map(lambda line: line.strip().split()[-1], lines))
+        logger.info("file list {}".format(files))
+        return files

@@ -18,7 +18,8 @@ def test():
     ftp.send("NOOP")
     ftp.recv(200)
     ftp.download('foo')
-    ftp.upload('bar')
+    # ftp.upload('bar')
+    ftp.list()
     ftp.send("QUIT")
     ftp.recv(221)
 
