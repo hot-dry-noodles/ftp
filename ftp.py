@@ -144,3 +144,15 @@ class FTP:
         filesname = list(map(lambda line: line[-1], files))
         logger.info("file list {}".format(filesname))
         return files
+
+    def getDir(self):
+        self.send("PWD")
+        ret = self.recv(257)
+        path = ret.split()[1]
+        path = path[1:-1]
+        return path
+
+    def setDir(self, path = ''):
+        self.send("CWD {}".format(path))
+        self.recv(250)
+

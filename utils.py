@@ -1,6 +1,5 @@
 import os
 import stat
-import sys
 import time
 import datetime
 import calendar
@@ -47,6 +46,13 @@ def ListFolder(path = LOCAL_DEFAULT_PATH):
     if not path:
         path = LOCAL_DEFAULT_PATH
     items = []
+    item1 = []
+    fIcon1 = QIcon(DIR_ICON)
+    nameItem1 = QStandardItem(fIcon1, '..')
+    item1.append(nameItem1)
+    for i in range(4):
+        item1.append(QStandardItem())
+    items.append(item1)
     files = os.listdir(path)
     for file in files:
         name, ext = os.path.splitext(file)
@@ -79,6 +85,13 @@ def ListFolder(path = LOCAL_DEFAULT_PATH):
 
 def remoteListFolder(files):
     items = []
+    item1 = []
+    fIcon1 = QIcon(DIR_ICON)
+    nameItem1 = QStandardItem(fIcon1, '..')
+    item1.append(nameItem1)
+    for i in range(4):
+        item1.append(QStandardItem())
+    items.append(item1)
     for file in files:
         name, ext = os.path.splitext(file[-1])
         postFix = ext[1:]

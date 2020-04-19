@@ -153,9 +153,10 @@ class Ui_MainWindow(object):
         self.disconnectButton.clicked.connect(self.disconnect)
         self.localPathButton.clicked.connect(self.changeLocalPath)
         self.remotePathButton.clicked.connect(self.changeRemotePath)
+        self.localFileList.doubleClicked.connect(self.localDoubleClick)
+        self.remoteFileList.doubleClicked.connect(self.remoteDoubleClick)
         # modified part end
         #self.ftp = FTP('192.168.0.106', user='kenvis', passwd='ks8449922123')
-        self.showRemoteList()
         '''
         redirecting stdout and stderr to runInfoOutput
         '''
@@ -192,12 +193,45 @@ class Ui_MainWindow(object):
         else:
             self.ftp = FTP(host, user=user, passwd=passwd)
         self.showRemoteList()
+        self.remotePathInput.setText(self.ftp.getDir())
 
     def disconnect(self):
         self.ftp.send("QUIT")
         self.ftp.recv(221)
         self.ftp = None
         self.showRemoteList()
+
+    def localDoubleClick(self):
+        index = self.localFileList.currentIndex()
+        row = index.row()
+        if row == 0:
+            path = os.path.dirname(self.localPathInput.text())
+            self.localPathInput.setText(path)
+            self.showLocalList(path)
+            return
+        path = self.localPathInput.text() + '/'
+        path += self.localModel.index(row, 0).data()
+        mode = self.localModel.index(row, 3).data()
+        if mode.startswith('d'):
+            self.localPathInput.setText(path)
+            self.showLocalList(path)
+
+    def remoteDoubleClick(self):
+        index = self.remoteFileList.currentIndex()
+        row = index.row()
+        if row == 0:
+            self.ftp.setDir('..')
+            path = self.ftp.getDir()
+            self.remotePathInput.setText(path)
+            self.showRemoteList(path)
+            return
+        path = self.ftp.getDir() + '/'
+        path += self.remoteModel.index(row, 0).data()
+        mode = self.remoteModel.index(row, 3).data()
+        if mode.startswith('d'):
+            self.remotePathInput.setText(path)
+            self.ftp.setDir(path)
+            self.showRemoteList(path)
 
     def changeLocalPath(self):
         local_path = self.localPathInput.text()
