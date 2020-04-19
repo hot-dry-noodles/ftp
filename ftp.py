@@ -84,6 +84,8 @@ class FTP:
     # STOR name: Accept the data and to store the data as a file at the server site
     # RETR name: Retrieve a copy of the file
     def transfer(self, cmd) -> socket:
+        self.send("TYPE I")  # binary mode
+        self.recv(200)
         host, port = self.pasv()
         self.send(cmd)
         conn = socket.create_connection((host, port))  # data connection
@@ -106,17 +108,25 @@ class FTP:
     def download(self, remote, local="", blocksize=8192):
         filename = os.path.basename(remote)
         cmd = "RETR {}".format(remote)
-        with open(local + filename, 'wb') as f, self.transfer(cmd) as conn:
+        path = local + filename
+        # reset offset to where previous transmission ends
+        retry = os.path.exists(path)
+        if retry:
+            offset = os.stat(path).st_size
+            self.send("REST {}".format(offset))
+            self.recv(350)
+        with open(path, 'ab' if retry else 'wb') as f, self.transfer(cmd) as conn:
             while 1:
                 buf = conn.recv(blocksize)
                 if not buf:
                     break
+                logger.info("received {} bytes".format(len(buf)))
                 f.write(buf)
         self.recv(226)  # 226 Transfer complete
 
-    def list(self, dir=""):
+    def list(self, dir="") -> list:
         cmd = "LIST {}".format(dir)
-        lines = None
+        lines = []
         with self.transfer(cmd) as conn:
             with conn.makefile('r') as f:
                 lines = f.readlines()
