@@ -128,8 +128,6 @@ class Ui_MainWindow(object):
         self.remoteFileList.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
         self.remoteFileList.customContextMenuRequested.connect(self.createRemoteContextMenu)
         # modified part end
-        #self.ftp = FTP('192.168.0.106', user='kenvis', passwd='ks8449922123')
-        self.showRemoteList()
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
