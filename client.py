@@ -1,7 +1,10 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from utils import *
+from ftp import *
 
 class Ui_MainWindow(object):
+    ftp = None
+
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(1149, 678)
@@ -109,30 +112,17 @@ class Ui_MainWindow(object):
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
         # modified part start
         self.localPathInput.setText(LOCAL_DEFAULT_PATH)
-        self.localModel = QtGui.QStandardItemModel()
-        self.localModel.setHorizontalHeaderLabels((u'文件名', u'文件大小', u'文件类型', u'文件权限', u'修改日期'))
+        self.localModel = QtGui.QStandardItemModel() 
         self.remoteModel = QtGui.QStandardItemModel()
-        self.remoteModel.setHorizontalHeaderLabels((u'文件名', u'文件大小', u'文件类型', u'文件权限', u'修改日期'))
-        self.localFileList.setModel(self.localModel)
-        self.localFileList.horizontalHeader().setSectionResizeMode(0, QtWidgets.QHeaderView.ResizeToContents)
-        self.localFileList.horizontalHeader().setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeToContents)
-        self.localFileList.horizontalHeader().setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeToContents)
-        self.localFileList.horizontalHeader().setSectionResizeMode(3, QtWidgets.QHeaderView.ResizeToContents)
-        self.localFileList.horizontalHeader().setSectionResizeMode(4, QtWidgets.QHeaderView.Stretch)
-        self.remoteFileList.setModel(self.remoteModel)
-        self.remoteFileList.horizontalHeader().setSectionResizeMode(0, QtWidgets.QHeaderView.ResizeToContents)
-        self.remoteFileList.horizontalHeader().setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeToContents)
-        self.remoteFileList.horizontalHeader().setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeToContents)
-        self.remoteFileList.horizontalHeader().setSectionResizeMode(3, QtWidgets.QHeaderView.ResizeToContents)
-        self.remoteFileList.horizontalHeader().setSectionResizeMode(4, QtWidgets.QHeaderView.Stretch)
-        self.localItems = ListFolder()
-        for i in range(0, len(self.localItems)):
-            self.localModel.insertRow(i, self.localItems[i])
+        self.showLocalList()
+        self.showRemoteList()
         self.localFileList.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
         self.localFileList.customContextMenuRequested.connect(self.createLocalContextMenu)
         self.remoteFileList.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
         self.remoteFileList.customContextMenuRequested.connect(self.createRemoteContextMenu)
         # modified part end
+        #self.ftp = FTP('192.168.0.106', user='kenvis', passwd='ks8449922123')
+        self.showRemoteList()
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
@@ -145,11 +135,23 @@ class Ui_MainWindow(object):
         self.localLabel.setText(_translate("MainWindow", "本机路径"))
         self.remoteLabel.setText(_translate("MainWindow", "远程路径"))
         self.runLabel.setText(_translate("MainWindow", "运行信息"))
+        self.connectButton.clicked.connect(self.connectserver)
 
     '''
     above codes are generated automatically.
     only modify codes below.
     '''
+    def connectserver(self):
+        host = self.serverInput.text()
+        user = self.userInput.text()
+        passwd = self.passwdInput.text()
+        port = self.portInput.text()
+        if user == '':
+            self.ftp = FTP(host)
+        else:
+            self.ftp = FTP(host, user=user, passwd=passwd)
+        self.showRemoteList()
+
     def createLocalContextMenu(self):
         localMenu = QtWidgets.QMenu(self.localFileList)
         removeAction = QtWidgets.QAction(u'删除')
@@ -189,10 +191,32 @@ class Ui_MainWindow(object):
         remoteMenu.exec_(QtGui.QCursor.pos())
 
     def showLocalList(self):
-        pass
+        self.localModel.clear()
+        self.localModel.setHorizontalHeaderLabels((u'文件名', u'文件大小', u'文件类型', u'文件权限', u'修改日期'))
+        self.localFileList.setModel(self.localModel)
+        self.localFileList.horizontalHeader().setSectionResizeMode(0, QtWidgets.QHeaderView.ResizeToContents)
+        self.localFileList.horizontalHeader().setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeToContents)
+        self.localFileList.horizontalHeader().setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeToContents)
+        self.localFileList.horizontalHeader().setSectionResizeMode(3, QtWidgets.QHeaderView.ResizeToContents)
+        self.localFileList.horizontalHeader().setSectionResizeMode(4, QtWidgets.QHeaderView.Stretch)
+        self.localItems = ListFolder()
+        for i in range(0, len(self.localItems)):
+            self.localModel.insertRow(i, self.localItems[i])
 
     def showRemoteList(self):
-        pass
+        self.remoteModel.clear()
+        self.remoteModel.setHorizontalHeaderLabels((u'文件名', u'文件大小', u'文件类型', u'文件权限', u'修改日期'))
+        self.remoteFileList.setModel(self.remoteModel)
+        self.remoteFileList.horizontalHeader().setSectionResizeMode(0, QtWidgets.QHeaderView.ResizeToContents)
+        self.remoteFileList.horizontalHeader().setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeToContents)
+        self.remoteFileList.horizontalHeader().setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeToContents)
+        self.remoteFileList.horizontalHeader().setSectionResizeMode(3, QtWidgets.QHeaderView.ResizeToContents)
+        self.remoteFileList.horizontalHeader().setSectionResizeMode(4, QtWidgets.QHeaderView.Stretch)
+        if self.ftp is not None:
+            files = self.ftp.list()
+            self.remoteItems = remoteListFolder(files)
+            for i in range(0, len(self.remoteItems)):
+                self.remoteModel.insertRow(i, self.remoteItems[i])
 
     def removeHandler(self):
         pass
@@ -201,16 +225,26 @@ class Ui_MainWindow(object):
         pass
 
     def uploadHandler(self):
-        pass
+        index = self.localFileList.currentIndex()
+        row = index.row()
+        filename = self.localModel.index(row, 0).data()  # file name
+        localpath = self.localPathInput.text()
+        filepath = localpath + '\\' + filename
+        self.ftp.upload(filepath)
+        self.showRemoteList()
 
     def downloadHandler(self):
-        pass
+        index = self.remoteFileList.currentIndex()
+        row = index.row()
+        filename = self.remoteModel.index(row, 0).data()
+        self.ftp.download(filename)
+        self.showLocalList()
 
     def renameHandler(self):
         pass
 
     def localRefreshHandler(self):
         pass
-    
+
     def remoteRefreshHandler(self):
         pass

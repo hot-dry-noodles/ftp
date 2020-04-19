@@ -36,5 +36,5 @@ def main(argv):
 
 
 if __name__ == '__main__':
-    test()
-    # main(sys.argv)
+    #test()
+    main(sys.argv)

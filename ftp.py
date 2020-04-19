@@ -131,6 +131,7 @@ class FTP:
             with conn.makefile('r') as f:
                 lines = f.readlines()
         self.recv(226)
-        files = list(map(lambda line: line.strip().split()[-1], lines))
-        logger.info("file list {}".format(files))
+        files = list(map(lambda line: line.strip().split(), lines))
+        filesname = list(map(lambda line: line[-1], files))
+        logger.info("file list {}".format(filesname))
         return files
