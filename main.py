@@ -1,5 +1,4 @@
 import sys
-
 # prefer official qt bindings
 if 'PySide2' in sys.modules:
     from PySide2.QtWidgets import QApplication, QMainWindow

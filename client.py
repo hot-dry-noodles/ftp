@@ -1,5 +1,12 @@
-from PyQt5 import QtCore, QtGui, QtWidgets
+import sys
+
+# prefer official qt bindings
+if 'PySide2' in sys.modules:
+    from PySide2 import QtWidgets, QtCore, QtGui
+else:
+    from PyQt5 import QtWidgets, QtCore, QtGui
 from utils import *
+
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -150,6 +157,7 @@ class Ui_MainWindow(object):
     above codes are generated automatically.
     only modify codes below.
     '''
+
     def createLocalContextMenu(self):
         localMenu = QtWidgets.QMenu(self.localFileList)
         removeAction = QtWidgets.QAction(u'删除')
@@ -211,6 +219,6 @@ class Ui_MainWindow(object):
 
     def localRefreshHandler(self):
         pass
-    
+
     def remoteRefreshHandler(self):
         pass
