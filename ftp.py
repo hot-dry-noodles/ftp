@@ -94,13 +94,21 @@ class FTP:
 
     # upload files by binary -- STOR
     def upload(self, local, remote="", blocksize=8192):
-        filename = os.path.basename(local)
-        cmd = "STOR {}".format(remote + filename)
-        with open(local, 'rb') as f, self.transfer(cmd) as conn:
+        path = remote + os.path.basename(local)
+        self.send("SIZE {}".format(path))
+        try:
+            offset = int(self.recv(213)[3:].strip())
+        except AssertionError:
+            offset = 0
+        # logger.info("offset {}".format(offset))
+        with open(local, 'rb') as f, self.transfer("APPE {}".format(path)) as conn:
+            f.seek(offset)
             while 1:
                 buf = f.read(blocksize)
                 if not buf:
                     break
+                logger.info("sent {} bytes".format(len(buf)))
+                # logger.info("sent {}".format(buf))
                 conn.sendall(buf)
         self.recv(226)  # Closing data connection
 
