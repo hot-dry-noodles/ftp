@@ -73,7 +73,7 @@
      <rect>
       <x>550</x>
       <y>10</y>
-      <width>111</width>
+      <width>121</width>
       <height>41</height>
      </rect>
     </property>
@@ -120,19 +120,6 @@
      </item>
     </layout>
    </widget>
-   <widget class="QPushButton" name="connectButton">
-    <property name="geometry">
-     <rect>
-      <x>670</x>
-      <y>15</y>
-      <width>71</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>连接</string>
-    </property>
-   </widget>
    <widget class="QWidget" name="horizontalLayoutWidget_3">
     <property name="geometry">
      <rect>
@@ -161,6 +148,13 @@
            </property>
           </widget>
          </item>
+         <item>
+          <widget class="QPushButton" name="localPathButton">
+           <property name="text">
+            <string>确定</string>
+           </property>
+          </widget>
+         </item>
         </layout>
        </item>
        <item>
@@ -186,12 +180,45 @@
            </property>
           </widget>
          </item>
+         <item>
+          <widget class="QPushButton" name="remotePathButton">
+           <property name="text">
+            <string>确定</string>
+           </property>
+          </widget>
+         </item>
         </layout>
        </item>
        <item>
         <widget class="QTableView" name="remoteFileList"/>
        </item>
       </layout>
+     </item>
+    </layout>
+   </widget>
+   <widget class="QWidget" name="horizontalLayoutWidget_4">
+    <property name="geometry">
+     <rect>
+      <x>700</x>
+      <y>14</y>
+      <width>138</width>
+      <height>35</height>
+     </rect>
+    </property>
+    <layout class="QHBoxLayout" name="horizontalLayout_7">
+     <item>
+      <widget class="QPushButton" name="connectButton">
+       <property name="text">
+        <string>连接</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="disconnectButton">
+       <property name="text">
+        <string>断开</string>
+       </property>
+      </widget>
      </item>
     </layout>
    </widget>

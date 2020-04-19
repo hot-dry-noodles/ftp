@@ -7,13 +7,7 @@
 # WARNING! All changes made in this file will be lost!
 
 
-import sys
-
-# prefer official qt bindings
-if 'PySide2' in sys.modules:
-    from PySide2 import QtWidgets, QtCore
-else:
-    from PyQt5 import QtWidgets, QtCore
+from PyQt5 import QtCore, QtGui, QtWidgets
 
 
 class Ui_MainWindow(object):
@@ -50,7 +44,7 @@ class Ui_MainWindow(object):
         self.passwdInput.setObjectName("passwdInput")
         self.horizontalLayout.addWidget(self.passwdInput)
         self.horizontalLayoutWidget_2 = QtWidgets.QWidget(self.centralwidget)
-        self.horizontalLayoutWidget_2.setGeometry(QtCore.QRect(550, 10, 111, 41))
+        self.horizontalLayoutWidget_2.setGeometry(QtCore.QRect(550, 10, 121, 41))
         self.horizontalLayoutWidget_2.setObjectName("horizontalLayoutWidget_2")
         self.horizontalLayout_2 = QtWidgets.QHBoxLayout(self.horizontalLayoutWidget_2)
         self.horizontalLayout_2.setContentsMargins(0, 0, 0, 0)
@@ -77,9 +71,6 @@ class Ui_MainWindow(object):
         self.runInfoOutput.setEnabled(True)
         self.runInfoOutput.setObjectName("runInfoOutput")
         self.verticalLayout_4.addWidget(self.runInfoOutput)
-        self.connectButton = QtWidgets.QPushButton(self.centralwidget)
-        self.connectButton.setGeometry(QtCore.QRect(670, 15, 71, 31))
-        self.connectButton.setObjectName("connectButton")
         self.horizontalLayoutWidget_3 = QtWidgets.QWidget(self.centralwidget)
         self.horizontalLayoutWidget_3.setGeometry(QtCore.QRect(10, 50, 1131, 381))
         self.horizontalLayoutWidget_3.setObjectName("horizontalLayoutWidget_3")
@@ -97,6 +88,9 @@ class Ui_MainWindow(object):
         self.localPathInput.setText("")
         self.localPathInput.setObjectName("localPathInput")
         self.horizontalLayout_3.addWidget(self.localPathInput)
+        self.localPathButton = QtWidgets.QPushButton(self.horizontalLayoutWidget_3)
+        self.localPathButton.setObjectName("localPathButton")
+        self.horizontalLayout_3.addWidget(self.localPathButton)
         self.verticalLayout_2.addLayout(self.horizontalLayout_3)
         self.localFileList = QtWidgets.QTableView(self.horizontalLayoutWidget_3)
         self.localFileList.setObjectName("localFileList")
@@ -113,11 +107,26 @@ class Ui_MainWindow(object):
         self.remotePathInput.setText("")
         self.remotePathInput.setObjectName("remotePathInput")
         self.horizontalLayout_5.addWidget(self.remotePathInput)
+        self.remotePathButton = QtWidgets.QPushButton(self.horizontalLayoutWidget_3)
+        self.remotePathButton.setObjectName("remotePathButton")
+        self.horizontalLayout_5.addWidget(self.remotePathButton)
         self.verticalLayout_3.addLayout(self.horizontalLayout_5)
         self.remoteFileList = QtWidgets.QTableView(self.horizontalLayoutWidget_3)
         self.remoteFileList.setObjectName("remoteFileList")
         self.verticalLayout_3.addWidget(self.remoteFileList)
         self.horizontalLayout_4.addLayout(self.verticalLayout_3)
+        self.horizontalLayoutWidget_4 = QtWidgets.QWidget(self.centralwidget)
+        self.horizontalLayoutWidget_4.setGeometry(QtCore.QRect(700, 14, 138, 35))
+        self.horizontalLayoutWidget_4.setObjectName("horizontalLayoutWidget_4")
+        self.horizontalLayout_7 = QtWidgets.QHBoxLayout(self.horizontalLayoutWidget_4)
+        self.horizontalLayout_7.setContentsMargins(0, 0, 0, 0)
+        self.horizontalLayout_7.setObjectName("horizontalLayout_7")
+        self.connectButton = QtWidgets.QPushButton(self.horizontalLayoutWidget_4)
+        self.connectButton.setObjectName("connectButton")
+        self.horizontalLayout_7.addWidget(self.connectButton)
+        self.disconnectButton = QtWidgets.QPushButton(self.horizontalLayoutWidget_4)
+        self.disconnectButton.setObjectName("disconnectButton")
+        self.horizontalLayout_7.addWidget(self.disconnectButton)
         MainWindow.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(MainWindow)
@@ -131,6 +140,9 @@ class Ui_MainWindow(object):
         self.passwdLabel.setText(_translate("MainWindow", "密码"))
         self.portLabel.setText(_translate("MainWindow", "端口号"))
         self.runLabel.setText(_translate("MainWindow", "运行信息"))
-        self.connectButton.setText(_translate("MainWindow", "连接"))
         self.localLabel.setText(_translate("MainWindow", "本机路径"))
+        self.localPathButton.setText(_translate("MainWindow", "确定"))
         self.remoteLabel.setText(_translate("MainWindow", "远程路径"))
+        self.remotePathButton.setText(_translate("MainWindow", "确定"))
+        self.connectButton.setText(_translate("MainWindow", "连接"))
+        self.disconnectButton.setText(_translate("MainWindow", "断开"))

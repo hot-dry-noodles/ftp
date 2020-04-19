@@ -43,13 +43,15 @@ def getFileMode(file):
     return fullMode
 
 
-def ListFolder(path=LOCAL_DEFAULT_PATH):
+def ListFolder(path = LOCAL_DEFAULT_PATH):
+    if not path:
+        path = LOCAL_DEFAULT_PATH
     items = []
     files = os.listdir(path)
     for file in files:
         name, ext = os.path.splitext(file)
         postFix = ext[1:]
-        absPath = os.path.join(os.getcwd(), file)
+        absPath = os.path.join(path, file)
         mode = getFileMode(absPath)
         if postFix:
             name = name + '.' + postFix
@@ -62,8 +64,8 @@ def ListFolder(path=LOCAL_DEFAULT_PATH):
         else:
             fType = u'未知文件'
             fIcon = QIcon(OTHER_ICON)
-        size = os.path.getsize(file)
-        tm = os.path.getmtime(file)
+        size = os.path.getsize(absPath)
+        tm = os.path.getmtime(absPath)
         item = []
         nameItem = QStandardItem(fIcon, name)
         item.append(nameItem)

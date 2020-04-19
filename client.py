@@ -9,6 +9,12 @@ from utils import *
 from ftp import *
 
 
+class EmittingStream(QtCore.QObject):
+    textWritten = QtCore.pyqtSignal(str)
+
+    def write(self, text):
+        self.textWritten.emit(str(text))
+
 class Ui_MainWindow(object):
     ftp = None
 
@@ -45,7 +51,7 @@ class Ui_MainWindow(object):
         self.passwdInput.setObjectName("passwdInput")
         self.horizontalLayout.addWidget(self.passwdInput)
         self.horizontalLayoutWidget_2 = QtWidgets.QWidget(self.centralwidget)
-        self.horizontalLayoutWidget_2.setGeometry(QtCore.QRect(550, 10, 111, 41))
+        self.horizontalLayoutWidget_2.setGeometry(QtCore.QRect(550, 10, 121, 41))
         self.horizontalLayoutWidget_2.setObjectName("horizontalLayoutWidget_2")
         self.horizontalLayout_2 = QtWidgets.QHBoxLayout(self.horizontalLayoutWidget_2)
         self.horizontalLayout_2.setContentsMargins(0, 0, 0, 0)
@@ -72,9 +78,6 @@ class Ui_MainWindow(object):
         self.runInfoOutput.setEnabled(True)
         self.runInfoOutput.setObjectName("runInfoOutput")
         self.verticalLayout_4.addWidget(self.runInfoOutput)
-        self.connectButton = QtWidgets.QPushButton(self.centralwidget)
-        self.connectButton.setGeometry(QtCore.QRect(670, 15, 71, 31))
-        self.connectButton.setObjectName("connectButton")
         self.horizontalLayoutWidget_3 = QtWidgets.QWidget(self.centralwidget)
         self.horizontalLayoutWidget_3.setGeometry(QtCore.QRect(10, 50, 1131, 381))
         self.horizontalLayoutWidget_3.setObjectName("horizontalLayoutWidget_3")
@@ -92,6 +95,9 @@ class Ui_MainWindow(object):
         self.localPathInput.setText("")
         self.localPathInput.setObjectName("localPathInput")
         self.horizontalLayout_3.addWidget(self.localPathInput)
+        self.localPathButton = QtWidgets.QPushButton(self.horizontalLayoutWidget_3)
+        self.localPathButton.setObjectName("localPathButton")
+        self.horizontalLayout_3.addWidget(self.localPathButton)
         self.verticalLayout_2.addLayout(self.horizontalLayout_3)
         self.localFileList = QtWidgets.QTableView(self.horizontalLayoutWidget_3)
         self.localFileList.setObjectName("localFileList")
@@ -108,16 +114,32 @@ class Ui_MainWindow(object):
         self.remotePathInput.setText("")
         self.remotePathInput.setObjectName("remotePathInput")
         self.horizontalLayout_5.addWidget(self.remotePathInput)
+        self.remotePathButton = QtWidgets.QPushButton(self.horizontalLayoutWidget_3)
+        self.remotePathButton.setObjectName("remotePathButton")
+        self.horizontalLayout_5.addWidget(self.remotePathButton)
         self.verticalLayout_3.addLayout(self.horizontalLayout_5)
         self.remoteFileList = QtWidgets.QTableView(self.horizontalLayoutWidget_3)
         self.remoteFileList.setObjectName("remoteFileList")
         self.verticalLayout_3.addWidget(self.remoteFileList)
         self.horizontalLayout_4.addLayout(self.verticalLayout_3)
+        self.horizontalLayoutWidget_4 = QtWidgets.QWidget(self.centralwidget)
+        self.horizontalLayoutWidget_4.setGeometry(QtCore.QRect(700, 14, 138, 35))
+        self.horizontalLayoutWidget_4.setObjectName("horizontalLayoutWidget_4")
+        self.horizontalLayout_7 = QtWidgets.QHBoxLayout(self.horizontalLayoutWidget_4)
+        self.horizontalLayout_7.setContentsMargins(0, 0, 0, 0)
+        self.horizontalLayout_7.setObjectName("horizontalLayout_7")
+        self.connectButton = QtWidgets.QPushButton(self.horizontalLayoutWidget_4)
+        self.connectButton.setObjectName("connectButton")
+        self.horizontalLayout_7.addWidget(self.connectButton)
+        self.disconnectButton = QtWidgets.QPushButton(self.horizontalLayoutWidget_4)
+        self.disconnectButton.setObjectName("disconnectButton")
+        self.horizontalLayout_7.addWidget(self.disconnectButton)
         MainWindow.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
         # modified part start
+        self.passwdInput.setEchoMode(QtWidgets.QLineEdit.PasswordEchoOnEdit)
         self.localPathInput.setText(LOCAL_DEFAULT_PATH)
         self.localModel = QtGui.QStandardItemModel()
         self.remoteModel = QtGui.QStandardItemModel()
@@ -127,22 +149,34 @@ class Ui_MainWindow(object):
         self.localFileList.customContextMenuRequested.connect(self.createLocalContextMenu)
         self.remoteFileList.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
         self.remoteFileList.customContextMenuRequested.connect(self.createRemoteContextMenu)
+        self.connectButton.clicked.connect(self.connectserver)
+        self.disconnectButton.clicked.connect(self.disconnect)
+        self.localPathButton.clicked.connect(self.changeLocalPath)
+        self.remotePathButton.clicked.connect(self.changeRemotePath)
         # modified part end
         #self.ftp = FTP('192.168.0.106', user='kenvis', passwd='ks8449922123')
         self.showRemoteList()
+        '''
+        redirecting stdout and stderr to runInfoOutput
+        '''
+        sys.stdout = EmittingStream(textWritten=self.normalOutputWritten)
+        sys.stderr = EmittingStream(textWritten=self.normalOutputWritten)
+
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "FTP客户端"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
         self.serverLabel.setText(_translate("MainWindow", "主机"))
         self.userLabel.setText(_translate("MainWindow", "用户名"))
         self.passwdLabel.setText(_translate("MainWindow", "密码"))
         self.portLabel.setText(_translate("MainWindow", "端口号"))
-        self.connectButton.setText(_translate("MainWindow", "连接"))
-        self.localLabel.setText(_translate("MainWindow", "本机路径"))
-        self.remoteLabel.setText(_translate("MainWindow", "远程路径"))
         self.runLabel.setText(_translate("MainWindow", "运行信息"))
-        self.connectButton.clicked.connect(self.connectserver)
+        self.localLabel.setText(_translate("MainWindow", "本机路径"))
+        self.localPathButton.setText(_translate("MainWindow", "确定"))
+        self.remoteLabel.setText(_translate("MainWindow", "远程路径"))
+        self.remotePathButton.setText(_translate("MainWindow", "确定"))
+        self.connectButton.setText(_translate("MainWindow", "连接"))
+        self.disconnectButton.setText(_translate("MainWindow", "断开"))
 
     '''
     above codes are generated automatically.
@@ -158,6 +192,20 @@ class Ui_MainWindow(object):
         else:
             self.ftp = FTP(host, user=user, passwd=passwd)
         self.showRemoteList()
+
+    def disconnect(self):
+        self.ftp.send("QUIT")
+        self.ftp.recv(221)
+        self.ftp = None
+        self.showRemoteList()
+
+    def changeLocalPath(self):
+        local_path = self.localPathInput.text()
+        self.showLocalList(local_path)
+
+    def changeRemotePath(self):
+        remote_path = self.remotePathInput.text()
+        self.showRemoteList(remote_path)
 
     def createLocalContextMenu(self):
         localMenu = QtWidgets.QMenu(self.localFileList)
@@ -197,7 +245,7 @@ class Ui_MainWindow(object):
         refreshAction.triggered.connect(self.remoteRefreshHandler)
         remoteMenu.exec_(QtGui.QCursor.pos())
 
-    def showLocalList(self):
+    def showLocalList(self, path = ''):
         self.localModel.clear()
         self.localModel.setHorizontalHeaderLabels((u'文件名', u'文件大小', u'文件类型', u'文件权限', u'修改日期'))
         self.localFileList.setModel(self.localModel)
@@ -206,11 +254,11 @@ class Ui_MainWindow(object):
         self.localFileList.horizontalHeader().setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeToContents)
         self.localFileList.horizontalHeader().setSectionResizeMode(3, QtWidgets.QHeaderView.ResizeToContents)
         self.localFileList.horizontalHeader().setSectionResizeMode(4, QtWidgets.QHeaderView.Stretch)
-        self.localItems = ListFolder()
+        self.localItems = ListFolder(path)
         for i in range(0, len(self.localItems)):
             self.localModel.insertRow(i, self.localItems[i])
 
-    def showRemoteList(self):
+    def showRemoteList(self, path = ''):
         self.remoteModel.clear()
         self.remoteModel.setHorizontalHeaderLabels((u'文件名', u'文件大小', u'文件类型', u'文件权限', u'修改日期'))
         self.remoteFileList.setModel(self.remoteModel)
@@ -220,10 +268,17 @@ class Ui_MainWindow(object):
         self.remoteFileList.horizontalHeader().setSectionResizeMode(3, QtWidgets.QHeaderView.ResizeToContents)
         self.remoteFileList.horizontalHeader().setSectionResizeMode(4, QtWidgets.QHeaderView.Stretch)
         if self.ftp is not None:
-            files = self.ftp.list()
+            files = self.ftp.list(path)
             self.remoteItems = remoteListFolder(files)
             for i in range(0, len(self.remoteItems)):
                 self.remoteModel.insertRow(i, self.remoteItems[i])
+
+    def normalOutputWritten(self, text):
+        cursor = self.runInfoOutput.textCursor()
+        cursor.movePosition(QtGui.QTextCursor.End)
+        cursor.insertText(text)
+        self.runInfoOutput.setTextCursor(cursor)
+        self.runInfoOutput.ensureCursorVisible()
 
     def removeHandler(self):
         pass
