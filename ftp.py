@@ -133,26 +133,43 @@ class FTP:
                 f.write(buf)
         self.recv(226)  # 226 Transfer complete
 
-    def list(self, dir="") -> list:
-        cmd = "LIST {}".format(dir)
+    def list(self, path="") -> list:
+        cmd = "LIST {}".format(path)
         lines = []
         with self.transfer(cmd) as conn:
             with conn.makefile('r') as f:
                 lines = f.readlines()
         self.recv(226)
         files = list(map(lambda line: line.strip().split(), lines))
-        filesname = list(map(lambda line: line[-1], files))
-        logger.info("file list {}".format(filesname))
+        filenames = list(map(lambda line: line[-1], files))
+        logger.info("file list {}".format(filenames))
         return files
 
-    def getDir(self):
+    def pwd(self):
         self.send("PWD")
         ret = self.recv(257)
         path = ret.split()[1]
         path = path[1:-1]
         return path
 
-    def setDir(self, path = ''):
+    def cd(self, path=""):
         self.send("CWD {}".format(path))
         self.recv(250)
 
+    def mkdir(self, path):
+        self.send("MKD {}".format(path))
+        self.recv(257)
+
+    def rm(self, path):
+        try:
+            self.send("DELE {}".format(path))
+            self.recv(250)
+        except AssertionError:
+            self.send("RMD {}".format(path))
+            self.recv(250)
+
+    def mv(self, old, new):
+        self.send("RNFR {}".format(old))
+        self.recv(350)
+        self.send("RNTO {}".format(new))
+        self.recv(250)

@@ -193,7 +193,7 @@ class Ui_MainWindow(object):
         else:
             self.ftp = FTP(host, user=user, passwd=passwd)
         self.showRemoteList()
-        self.remotePathInput.setText(self.ftp.getDir())
+        self.remotePathInput.setText(self.ftp.pwd())
 
     def disconnect(self):
         self.ftp.send("QUIT")
@@ -220,17 +220,17 @@ class Ui_MainWindow(object):
         index = self.remoteFileList.currentIndex()
         row = index.row()
         if row == 0:
-            self.ftp.setDir('..')
-            path = self.ftp.getDir()
+            self.ftp.cd('..')
+            path = self.ftp.pwd()
             self.remotePathInput.setText(path)
             self.showRemoteList(path)
             return
-        path = self.ftp.getDir() + '/'
+        path = self.ftp.pwd() + '/'
         path += self.remoteModel.index(row, 0).data()
         mode = self.remoteModel.index(row, 3).data()
         if mode.startswith('d'):
             self.remotePathInput.setText(path)
-            self.ftp.setDir(path)
+            self.ftp.cd(path)
             self.showRemoteList(path)
 
     def changeLocalPath(self):
