@@ -1,5 +1,6 @@
 import os
 import stat
+import sys
 import time
 import datetime
 import calendar
@@ -12,9 +13,10 @@ FILE_DICT = {'py': u'python文件', 'md': u'markdown文件', 'txt': u'文本文�
 PY_ICON = './ui/icon/py.svg'
 TXT_ICON = './ui/icon/txt.svg'
 DIR_ICON = './ui/icon/dir.svg'
-MD_ICON =  './ui/icon/md.svg'
+MD_ICON = './ui/icon/md.svg'
 OTHER_ICON = './ui/icon/other.svg'
 ICON_DICT = {'py': PY_ICON, 'md': MD_ICON, 'txt': TXT_ICON}
+
 
 def size2str(size: int) -> str:
     if size < 1024:
@@ -23,6 +25,7 @@ def size2str(size: int) -> str:
         return str(round(float(size) / 1024, 1)) + 'MB'
     else:
         return str(round(float(size) / 1024 / 1024, 1)) + 'GB'
+
 
 def getFileMode(file):
     st = os.stat(file)
@@ -38,6 +41,7 @@ def getFileMode(file):
     for i in range(9):
         fullMode += bool(mode & modes[i]) and 'rwxrwxrwx'[i] or '-'
     return fullMode
+
 
 def ListFolder(path=LOCAL_DEFAULT_PATH):
     items = []

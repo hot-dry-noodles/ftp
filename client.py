@@ -1,6 +1,13 @@
-from PyQt5 import QtCore, QtGui, QtWidgets
+import sys
+
+# prefer official qt bindings
+if 'PySide2' in sys.modules:
+    from PySide2 import QtWidgets, QtCore, QtGui
+else:
+    from PyQt5 import QtWidgets, QtCore, QtGui
 from utils import *
 from ftp import *
+
 
 class Ui_MainWindow(object):
     ftp = None
@@ -112,7 +119,7 @@ class Ui_MainWindow(object):
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
         # modified part start
         self.localPathInput.setText(LOCAL_DEFAULT_PATH)
-        self.localModel = QtGui.QStandardItemModel() 
+        self.localModel = QtGui.QStandardItemModel()
         self.remoteModel = QtGui.QStandardItemModel()
         self.showLocalList()
         self.showRemoteList()
@@ -145,7 +152,7 @@ class Ui_MainWindow(object):
         host = self.serverInput.text()
         user = self.userInput.text()
         passwd = self.passwdInput.text()
-        port = self.portInput.text()
+        #port = self.portInput.text()
         if user == '':
             self.ftp = FTP(host)
         else:
