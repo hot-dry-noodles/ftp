@@ -3,8 +3,10 @@ import sys
 # prefer official qt bindings
 if 'PySide2' in sys.modules:
     from PySide2 import QtWidgets, QtCore, QtGui
+    from PySide2.QtWidgets import QInputDialog
 else:
     from PyQt5 import QtWidgets, QtCore, QtGui
+    from PyQt5.QtWidgets import QInputDialog
 from utils import *
 from ftp import *
 
@@ -14,6 +16,7 @@ class EmittingStream(QtCore.QObject):
 
     def write(self, text):
         self.textWritten.emit(str(text))
+
 
 class Ui_MainWindow(object):
     ftp = None
@@ -156,13 +159,12 @@ class Ui_MainWindow(object):
         self.localFileList.doubleClicked.connect(self.localDoubleClick)
         self.remoteFileList.doubleClicked.connect(self.remoteDoubleClick)
         # modified part end
-        #self.ftp = FTP('192.168.0.106', user='kenvis', passwd='ks8449922123')
+        # self.ftp = FTP('192.168.0.106', user='kenvis', passwd='ks8449922123')
         '''
         redirecting stdout and stderr to runInfoOutput
         '''
         sys.stdout = EmittingStream(textWritten=self.normalOutputWritten)
         sys.stderr = EmittingStream(textWritten=self.normalOutputWritten)
-
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
@@ -183,11 +185,12 @@ class Ui_MainWindow(object):
     above codes are generated automatically.
     only modify codes below.
     '''
+
     def connectserver(self):
         host = self.serverInput.text()
         user = self.userInput.text()
         passwd = self.passwdInput.text()
-        #port = self.portInput.text()
+        # port = self.portInput.text()
         if user == '':
             self.ftp = FTP(host)
         else:
@@ -253,10 +256,10 @@ class Ui_MainWindow(object):
         localMenu.addAction(uploadAction)
         localMenu.addAction(renameAction)
         localMenu.addAction(refreshAction)
-        removeAction.triggered.connect(self.removeHandler)
-        mkdirAction.triggered.connect(self.mkdirHandler)
+        removeAction.triggered.connect(self.localRemoveHandler)
+        mkdirAction.triggered.connect(self.localMkdirHandler)
         uploadAction.triggered.connect(self.uploadHandler)
-        renameAction.triggered.connect(self.renameHandler)
+        renameAction.triggered.connect(self.localRenameHandler)
         refreshAction.triggered.connect(self.localRefreshHandler)
         localMenu.exec_(QtGui.QCursor.pos())
 
@@ -272,14 +275,14 @@ class Ui_MainWindow(object):
         remoteMenu.addAction(downloadAction)
         remoteMenu.addAction(renameAction)
         remoteMenu.addAction(refreshAction)
-        removeAction.triggered.connect(self.removeHandler)
-        mkdirAction.triggered.connect(self.mkdirHandler)
+        removeAction.triggered.connect(self.remoteRemoveHandler)
+        mkdirAction.triggered.connect(self.remoteMkdirHandler)
         downloadAction.triggered.connect(self.downloadHandler)
-        renameAction.triggered.connect(self.renameHandler)
+        renameAction.triggered.connect(self.remoteRenameHandler)
         refreshAction.triggered.connect(self.remoteRefreshHandler)
         remoteMenu.exec_(QtGui.QCursor.pos())
 
-    def showLocalList(self, path = ''):
+    def showLocalList(self, path=''):
         self.localModel.clear()
         self.localModel.setHorizontalHeaderLabels((u'文件名', u'文件大小', u'文件类型', u'文件权限', u'修改日期'))
         self.localFileList.setModel(self.localModel)
@@ -292,7 +295,7 @@ class Ui_MainWindow(object):
         for i in range(0, len(self.localItems)):
             self.localModel.insertRow(i, self.localItems[i])
 
-    def showRemoteList(self, path = ''):
+    def showRemoteList(self, path=''):
         self.remoteModel.clear()
         self.remoteModel.setHorizontalHeaderLabels((u'文件名', u'文件大小', u'文件类型', u'文件权限', u'修改日期'))
         self.remoteFileList.setModel(self.remoteModel)
@@ -314,11 +317,24 @@ class Ui_MainWindow(object):
         self.runInfoOutput.setTextCursor(cursor)
         self.runInfoOutput.ensureCursorVisible()
 
-    def removeHandler(self):
+    def localRemoveHandler(self):
         pass
 
-    def mkdirHandler(self):
+    def remoteRemoveHandler(self):
+        index = self.remoteFileList.currentIndex()
+        row = index.row()
+        filename = self.remoteModel.index(row, 0).data()
+        self.ftp.rm(filename)
+        self.showRemoteList()
+
+    def localMkdirHandler(self):
         pass
+
+    def remoteMkdirHandler(self):
+        text, pressed = QInputDialog.getText(self.centralwidget, "mkdir", "enter new dir name:")
+        if pressed and text != "":
+            self.ftp.mkdir(text)
+        self.showRemoteList()
 
     def uploadHandler(self):
         index = self.localFileList.currentIndex()
@@ -336,11 +352,20 @@ class Ui_MainWindow(object):
         self.ftp.download(filename)
         self.showLocalList()
 
-    def renameHandler(self):
+    def localRenameHandler(self):
         pass
+
+    def remoteRenameHandler(self):
+        index = self.remoteFileList.currentIndex()
+        row = index.row()
+        filename = self.remoteModel.index(row, 0).data()
+        text, pressed = QInputDialog.getText(self.centralwidget, "mv", "enter new file name:")
+        if pressed and text != "":
+            self.ftp.mv(filename, text)
+        self.showRemoteList()
 
     def localRefreshHandler(self):
         pass
 
     def remoteRefreshHandler(self):
-        pass
+        self.showRemoteList()
