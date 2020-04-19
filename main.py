@@ -8,10 +8,11 @@ import client
 import log
 from ftp import FTP
 
-logger = log.setup('ftp')
+
 
 
 def test():
+    logger = log.setup('ftp')
     logger.info("testing with 104.238.181.33:21")
     ftp = FTP("104.238.181.33", 21, "vtta", "***")
     ftp.send("NOOP")
@@ -28,6 +29,7 @@ def main(argv):
     main_window = QMainWindow()
     ui = client.Ui_MainWindow()
     ui.setupUi(main_window)
+    log.setup('ftp')
     qss_style = open('./ui/style.qss').read()
     main_window.setStyleSheet(qss_style)
     main_window.show()
