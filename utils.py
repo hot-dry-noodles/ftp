@@ -5,6 +5,7 @@ import datetime
 import calendar
 from PyQt5.QtGui import QStandardItem
 from PyQt5.QtGui import QIcon
+from PyQt5.QtCore import Qt
 
 LOCAL_DEFAULT_PATH = os.getcwd()
 REMOTE_DEFAULT_PATH = ''
@@ -74,11 +75,13 @@ def ListFolder(path = LOCAL_DEFAULT_PATH):
         tm = os.path.getmtime(absPath)
         item = []
         nameItem = QStandardItem(fIcon, name)
+        timeItem = QStandardItem(time.strftime('%Y-%m-%d %H:%M', time.localtime(tm)))
+        timeItem.setTextAlignment(Qt.AlignHCenter)
         item.append(nameItem)
         item.append(QStandardItem(size2str(size)))
         item.append(QStandardItem(fType))
         item.append(QStandardItem(mode))
-        item.append(QStandardItem(time.strftime('%Y-%m-%d %H:%M', time.localtime(tm))))
+        item.append(timeItem)
         items.append(item)
 
     return items
@@ -111,11 +114,13 @@ def remoteListFolder(files):
         tm = getTime(file[5], file[6], file[7])
         item = []
         nameItem = QStandardItem(fIcon, name)
+        timeItem = QStandardItem(tm)
+        timeItem.setTextAlignment(Qt.AlignHCenter)
         item.append(nameItem)
         item.append(QStandardItem(size2str(size)))
         item.append(QStandardItem(fType))
         item.append(QStandardItem(mode))
-        item.append(QStandardItem(tm))
+        item.append(timeItem)
         items.append(item)
     return items
 
